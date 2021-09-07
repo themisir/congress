@@ -1,48 +1,31 @@
 package main
 
 import (
-	"congress/dns"
 	"congress/logger"
 	"congress/models"
-	"congress/proxy"
 	"io/ioutil"
 
 	"gopkg.in/yaml.v2"
 )
 
-func e(err error, format string) bool {
+func readConfig(filename string) (*models.Config, error) {
+	config := new(models.Config)
+	bytes, err := ioutil.ReadFile(filename)
 	if err != nil {
-		logger.Default.Error(format, err)
-		return false
-	} else {
-		return true
+		return nil, err
 	}
+	if err := yaml.Unmarshal(bytes, config); err != nil {
+		return nil, err
+	}
+	return config, nil
 }
 
 func main() {
-	var config models.Config
-	if bytes, err := ioutil.ReadFile("congress.yaml"); e(err, "Failed to read file: %s") {
-		if err := yaml.Unmarshal(bytes, &config); e(err, "Failed to parse yaml: %s") {
-			dns := dns.New()
-			http := proxy.New()
-
-			for _, rule := range config.Rules {
-				dns.AddRecord(rule.Host, config.Congress.Ip)
-				host := proxy.NewHost(rule.Host, rule.DefaultBackend)
-				for _, path := range rule.Paths {
-					host.AddPath(path.Path, proxy.PrefixPath, path.Backend)
-				}
-				http.AddHost(host)
-			}
-
-			if config.Congress.Dns.Enabled {
-				go dns.Listen(int(config.Congress.Dns.Port))
-			}
-			if config.Congress.Proxy.Enabled {
-				go http.Listen(int(config.Congress.Proxy.Port))
-			}
-
-			<-make(chan bool)
-		}
+	config, err := readConfig("congress.yaml")
+	if err != nil {
+		logger.Default.Error("Failed to read file: %s", err)
+	} else {
+		app := &App{config}
+		app.Run()
 	}
 }

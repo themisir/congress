@@ -19,7 +19,7 @@ func New() *DnsServer {
 }
 
 func (s *DnsServer) AddRecord(domain string, target string) {
-	s.records[domain] = target
+	s.records[domain+"."] = target
 }
 
 func (s *DnsServer) Print() {
@@ -28,7 +28,7 @@ func (s *DnsServer) Print() {
 	}
 }
 
-func (s *DnsServer) Listen(port int) error {
+func (s *DnsServer) Listen(port uint) error {
 	log.Info("Listening at port %d", port)
 	return dns.ListenAndServe(fmt.Sprintf(":%d", port), "udp", s)
 }

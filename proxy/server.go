@@ -32,7 +32,7 @@ func (s *ProxyServer) Print() {
 	}
 }
 
-func (s *ProxyServer) Listen(port int) error {
+func (s *ProxyServer) Listen(port uint) error {
 	log.Info("Listening at port %d", port)
 	return http.ListenAndServe(fmt.Sprintf(":%d", port), s)
 }
