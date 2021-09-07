@@ -27,6 +27,7 @@ func NewResolver(s string) *DnsResolver {
 }
 
 func (d *DnsResolver) Resolve(q dns.Question) (*dns.Msg, error) {
-	msg := &dns.Msg{Question: []dns.Question{q}}
+	msg := new(dns.Msg)
+	msg.SetQuestion(q.Name, q.Qtype)
 	return dns.Exchange(msg, d.server)
 }
