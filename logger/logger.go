@@ -56,17 +56,18 @@ func (l *Logger) Child(name string) *Logger {
 func (l *Logger) Log(level LogLevel, format string, v ...interface{}) {
 	if level >= l.minLevel {
 		var output io.Writer
+		var line string
 		if level < Error {
 			output = os.Stdout
 		} else {
 			output = os.Stderr
 		}
 		if l.name != "" {
-			fmt.Fprintf(output, "[%s] %s: ", levelNames[level], l.name)
+			line += fmt.Sprintf("[%s] %s: ", levelNames[level], l.name)
 		} else {
-			fmt.Fprintf(output, "[%s] ", levelNames[level])
+			line += fmt.Sprintf("[%s] ", levelNames[level])
 		}
-		fmt.Fprintf(output, format+"\n", v...)
+		fmt.Fprintf(output, line+format+"\n", v...)
 	}
 }
 
