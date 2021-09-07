@@ -21,13 +21,13 @@ func e(err error, format string) bool {
 
 func main() {
 	var config models.Config
-	if bytes, err := ioutil.ReadFile("congress.yamll"); e(err, "Failed to read file: %s") {
+	if bytes, err := ioutil.ReadFile("congress.yaml"); e(err, "Failed to read file: %s") {
 		if err := yaml.Unmarshal(bytes, &config); e(err, "Failed to parse yaml: %s") {
 			dns := dns.New()
 			http := proxy.New()
 
 			for _, rule := range config.Rules {
-				dns.AddRecord(rule.Host, "127.0.0.1")
+				dns.AddRecord(rule.Host, config.Congress.Ip)
 				host := proxy.NewHost(rule.Host, rule.DefaultBackend)
 				for _, path := range rule.Paths {
 					host.AddPath(path.Path, proxy.PrefixPath, path.Backend)
