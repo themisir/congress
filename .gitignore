@@ -1,0 +1,10 @@
+# Dependency cache
+go.sum
+
+# Environment files
+congress.yaml
+
+# Build output
+/congress
+/congress.exe
+/out
