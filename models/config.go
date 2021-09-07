@@ -26,10 +26,17 @@ type CongressConfig struct {
 	Proxy struct {
 		Enabled bool `yaml:"enabled"`
 		Port    uint `yaml:"port"`
+		TLS     *TLS `yaml:"tls"`
 	} `yaml:"proxy"`
 	Dns struct {
 		Enabled  bool   `yaml:"enabled"`
 		Port     uint   `yaml:"port"`
 		Fallback string `yaml:"fallback"`
 	} `yaml:"dns"`
+}
+
+type TLS struct {
+	Port     uint   `yaml:"port"`
+	KeyFile  string `yaml:"keyFile"`
+	CertFile string `yaml:"certFile"`
 }

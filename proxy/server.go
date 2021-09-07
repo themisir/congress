@@ -32,7 +32,9 @@ type ProxyServer struct {
 var log = logger.Default.Child("proxy")
 
 func New() *ProxyServer {
-	return &ProxyServer{make(map[string]*Host)}
+	return &ProxyServer{
+		hosts: make(map[string]*Host),
+	}
 }
 
 func (s *ProxyServer) AddHost(h *Host) {
@@ -46,6 +48,11 @@ func (s *ProxyServer) Print() {
 			log.Debug("  %s: %s", path.pattern, path.backend)
 		}
 	}
+}
+
+func (s *ProxyServer) ListenTLS(port uint, certFile string, keyFile string) error {
+	log.Info("Listening at port %d with TLS", port)
+	return http.ListenAndServeTLS(fmt.Sprintf(":%d", port), certFile, keyFile, s)
 }
 
 func (s *ProxyServer) Listen(port uint) error {

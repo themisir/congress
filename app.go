@@ -18,6 +18,7 @@ package main
 
 import (
 	"congress/dns"
+	"congress/logger"
 	"congress/models"
 	"congress/proxy"
 )
@@ -28,17 +29,23 @@ type App struct {
 
 func (a *App) startDns() {
 	server := dns.New()
+	config := a.config.Congress.Dns
+
 	for _, rule := range a.config.Rules {
 		server.AddRecord(rule.Host, a.config.Congress.Ip)
 	}
-	if a.config.Congress.Dns.Fallback != "" {
-		server.Fallback = dns.NewResolver(a.config.Congress.Dns.Fallback)
+
+	if config.Fallback != "" {
+		server.Fallback = dns.NewResolver(config.Fallback)
 	}
-	server.Listen(a.config.Congress.Dns.Port)
+
+	server.Listen(config.Port)
 }
 
 func (a *App) startProxy() {
 	server := proxy.New()
+	config := a.config.Congress.Proxy
+
 	for _, rule := range a.config.Rules {
 		host := proxy.NewHost(rule.Host, rule.DefaultBackend)
 		for _, path := range rule.Paths {
@@ -46,7 +53,16 @@ func (a *App) startProxy() {
 		}
 		server.AddHost(host)
 	}
-	server.Listen(a.config.Congress.Proxy.Port)
+
+	if config.TLS != nil {
+		go func() {
+			if err := server.ListenTLS(config.TLS.Port, config.TLS.CertFile, config.TLS.KeyFile); err != nil {
+				logger.Default.Error("Failed to start proxy server with TLS: %s", err)
+			}
+		}()
+	}
+
+	server.Listen(config.Port)
 }
 
 func (a *App) Run() {

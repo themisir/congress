@@ -3,8 +3,12 @@ go.sum
 
 # Environment files
 congress.yaml
+/openssl
 
 # Build output
 /congress
 /congress.exe
 /out
+
+# Temporarily ignored
+/scripts
