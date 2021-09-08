@@ -18,10 +18,14 @@ congress:
   proxy:
     enabled: true
     port: 80
+    tls:
+      port: 443
+      certFile: server.crt
+      keyFile: server.key
   dns:
     enabled: true
     port: 23
-    fallback: 8.8.8.8
+    fallback: "8.8.8.8:53"
 rules:
   - host: myapp.dev
     defaultBackend: http://frontend-service:80/
@@ -48,6 +52,18 @@ requests.
 ### `congress.proxy.port`
 
 Port number for congress reverse-proxy server.
+
+### `congress.proxy.tls.port`
+
+Port number for TLS enabled reverse-proxy server.
+
+### `congress.proxy.tls.certFile`
+
+TLS certificate file path.
+
+### `congress.proxy.tls.keyFile`
+
+TLS key file path.
 
 ### `congress.dns.enabled`
 
