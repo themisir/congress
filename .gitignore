@@ -1,6 +1,3 @@
-# Dependency cache
-go.sum
-
 # Environment files
 congress.yaml
 /openssl
